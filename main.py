@@ -5,22 +5,6 @@ import json
 app = Flask(__name__)
 db = database.Client()
 
-class Key:
-    keys = [
-        'id',
-        'name',
-        'status',
-        'country',
-        'status',
-        'reactor_type',
-        'reactor_model',
-        'construction_start',
-        'operational_from',
-        'operational_to',
-        'capacity',
-        'source',
-    ]
-
 @app.route('/', methods=['GET'])
 def index():
     return Response(
@@ -39,11 +23,11 @@ def select_where(key, value):
     key = key.lower()
     value = value.lower()
     
-    if key not in Key.keys:
+    if key not in db.keys:
         return Response(
             content_type='text/json', 
             response=json.dumps({
-                'error': f'Invalid where {key}={value} clause. Make sure you are using one of the following: {Key.keys} as your key.'
+                'error': f'Invalid where {key}={value} clause. Make sure you are using one of the following: {db.keys} as your key.'
             }),
             status=400
         )
@@ -62,11 +46,11 @@ def select_where(key, value):
 def select_unique(key):
     key = key.lower()
     
-    if key not in Key.keys:
+    if key not in db.keys:
         return Response(
             content_type='text/json', 
             response=json.dumps({
-                'error': f'Invalid unique {key} clause. Make sure you are using one of the following: {Key.keys} as your key.'
+                'error': f'Invalid unique {key} clause. Make sure you are using one of the following: {db.keys} as your key.'
             }),
             status=400
         )
@@ -81,7 +65,30 @@ def select_unique(key):
         })
     )
     
-
+@app.route('/data/count/<key>/all', methods=['GET'])
+def group_by_key(key):
+    if key not in db.keys:
+        return Response(
+            content_type='text/json', 
+            response=json.dumps({
+                'error': f'Invalid key {key}. Make sure you are using one of the following: {db.keys} as your key.'
+            }),
+            status=400
+        )
+    
+    columns = db.keys.copy()
+    columns.remove('id')
+    columns.remove(key)
+    
+    response = db.group_by(key, columns)
+    
+    return Response(
+        content_type='text/json', 
+        response=json.dumps({
+            "success": True,
+            'value': response,
+        })
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
