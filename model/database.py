@@ -1,6 +1,24 @@
 import pandas as pd
+from abc import ABC, abstractmethod
 
-class Client:
+class Database(ABC):
+    @abstractmethod
+    def query(self, key:str, value:str)->list[dict]:
+        pass
+    
+    @abstractmethod
+    def unique(self, key:str)->list:
+        pass
+    
+    @abstractmethod
+    def count(self, key:str)->int:
+        pass
+    
+    @abstractmethod
+    def group_by(self, key_column:str, columns:list[str])->dict:
+        pass
+
+class Client(Database):
     def __init__(self):
         df = pd.read_csv('./data/data.csv')
         self.data = df.to_dict('records')
@@ -59,7 +77,6 @@ class Client:
                 
         return results
     
-    
     def count(self, key:str)->int:
         values = self.unique(key)
         
@@ -69,7 +86,6 @@ class Client:
             
         return result
             
-        
     def group_by(self, key_column:str, columns:list[str])->dict:
         if type(key_column) == str:
             key_column = key_column.lower().replace(" ", "").replace("+", "")
