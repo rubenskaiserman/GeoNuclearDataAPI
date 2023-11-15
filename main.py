@@ -35,7 +35,7 @@ def data_index():
     return  render_template('httpcat.html', title="/data", image="https://http.cat/204")
     
 @app.route('/data/<key>/<value>', methods=['GET'])
-def query_data(key, value):
+def select_where(key, value):
     key = key.lower()
     value = value.lower()
     
@@ -49,6 +49,29 @@ def query_data(key, value):
         )
     
     response = db.query(key, value)
+
+    return Response(
+        content_type='text/json', 
+        response=json.dumps({
+            "success": True,
+            'value': response,
+        })
+    )
+    
+@app.route('/data/<key>', methods=['GET'])
+def select_unique(key):
+    key = key.lower()
+    
+    if key not in Key.keys:
+        return Response(
+            content_type='text/json', 
+            response=json.dumps({
+                'error': f'Invalid unique {key} clause. Make sure you are using one of the following: {Key.keys} as your key.'
+            }),
+            status=400
+        )
+    
+    response = db.unique(key)
 
     return Response(
         content_type='text/json', 

@@ -17,9 +17,12 @@ class Client:
                 
         return results
     
-    
-    
-if __name__ == '__main__':
-    client = Client()
-    print(client.data)    
-    
+    def unique(self, key:str)->list:
+        key = key.lower()
+        
+        results = []
+        for row in self.data:
+            if row[key] not in results:
+                results.append(row[key])
+                
+        return results
