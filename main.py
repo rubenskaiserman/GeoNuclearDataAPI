@@ -1,4 +1,4 @@
-from flask import Flask, Response, request
+from flask import Flask, Response, request, render_template
 from model import database
 import json
 
@@ -29,6 +29,10 @@ def index():
             'status': 'on'
         })
     )
+
+@app.route('/data', methods=['GET'])
+def data_index():
+    return  render_template('httpcat.html', title="/data", image="https://http.cat/204")
     
 @app.route('/data/<key>/<value>', methods=['GET'])
 def query_data(key, value):
@@ -44,7 +48,6 @@ def query_data(key, value):
             status=400
         )
     
-    # TODO: Search
     response = db.query(key, value)
 
     return Response(
@@ -55,6 +58,7 @@ def query_data(key, value):
         })
     )
     
+
 
 if __name__ == '__main__':
     app.run(debug=True)

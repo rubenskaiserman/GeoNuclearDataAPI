@@ -6,7 +6,7 @@ class Client:
         self.data = df.to_dict('records')
         
 
-    def query(self, key, value):
+    def query(self, key:str, value:str)->list[dict]:
         key = key.lower()
         value = value.lower()
         
