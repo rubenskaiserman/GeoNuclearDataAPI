@@ -14,6 +14,10 @@ def index():
         })
     )
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('httpcat.html', title="404", image="https://http.cat/404"), 404
+
 @app.route('/data', methods=['GET'])
 def data_index():
     return  render_template('httpcat.html', title="/data", image="https://http.cat/204")
