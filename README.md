@@ -1,2 +1,3 @@
-# GeoNuclearDataTelegram
-Bot for reading the GeoNuclearData
+# GeoNuclearDataAPI
+
+API for reading the data inside GeoNuclearData
