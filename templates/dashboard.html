@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <title>RCEI | Dashboard</title>
+    <script
+      src="https://unpkg.com/htmx.org@1.9.9"
+      integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      function addRange() {
+        const capacityDiv = document.getElementById("capacity");
+        const capacity = capacityDiv.value;
+        const capacityLabel = document.getElementById("capacity-label");
+
+        if (capacity == 0) {
+          capacityLabel.innerHTML = "Capacity: Not Selected (TW)";
+          return;
+        }
+
+        capacityLabel.innerHTML = `Capacity: ${capacity} (TW)`;
+      }
+    </script>
+  </head>
+  <body>
+    <div class="flex h-[80vh] m-7 text-center">
+      {% for i in range(keys_length) %}
+      <div class="">
+        <h2 class="text-xl font-semibold text-center">{{ keys[i] }}</h2>
+        <div class="h-full overflow-auto px-3 text-left">
+          {% for item in columns[i] %}
+          <label class="text-lg font-medium"
+            ><input class="my-4" type="checkbox" value="{{ item }}" name="{{ item }}" /> {{
+            item[:30] }}</label
+          ><br />
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="mt-10 text-center">
+      <label for="capacity" id="capacity-label"> Capacity: Not Selected (TW) </label>
+      <br />
+      <input
+        class="w-96"
+        type="range"
+        min="0"
+        max="1600"
+        step="100"
+        value="0"
+        class="slider"
+        id="capacity"
+        onchange="addRange()"
+      />
+    </div>
+  </body>
+</html>

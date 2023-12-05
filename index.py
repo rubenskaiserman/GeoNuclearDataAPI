@@ -1,16 +1,19 @@
 from flask import Flask, Response, request, render_template
-from model import database
+from model import database, util
+import numpy as np
 import json
 
 app = Flask(__name__)
 db = database.Client()
+helper = util.Client()
 
 @app.route('/', methods=['GET'])
 def index():
     return Response(
         content_type='text/json', 
         response=json.dumps({
-            'status': 'on'
+            'status': 'on',
+            'message': 'Welcome to the API. Please use the following endpoints: /data, /data/<key>, /data/<key>/<value>, /data/count/<key>/all'
         })
     )
 
@@ -93,6 +96,26 @@ def group_by_key(key):
             'value': response,
         })
     )
+
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    keys = db.keys.copy()
+    keys.remove('id')
+    keys.remove('source')
+    keys.remove('construction_start')
+    keys.remove('operational_from')
+    keys.remove('operational_to')
+    keys.remove('capacity')
+    
+    columns = []
+    for key in keys:
+        columns.append([str(item) for item in db.unique(key)])
+        
+    keys = [key.replace("_", " ").title() for key in keys]
+        
+    return render_template('dashboard.html', columns=columns, keys=keys, keys_length=len(keys))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

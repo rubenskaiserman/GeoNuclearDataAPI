@@ -27,7 +27,6 @@ class Client(Database):
             'name',
             'status',
             'country',
-            'status',
             'reactor_type',
             'reactor_model',
             'construction_start',
@@ -72,7 +71,7 @@ class Client(Database):
         
         results = []
         for row in self.data:
-            if row[key] not in results:
+            if row[key] not in results and str(row[key]) != 'nan':
                 results.append(row[key])
                 
         return results
