@@ -82,15 +82,12 @@ class Analysis:
         for table in intersection:
             if len(table) > 0:
                 df = pd.DataFrame(table)
-                tables.append(df.to_html(classes=''))
+                tables.append(df.to_html(classes='my-12 mx-auto w-1/2 text-sm', border=1, index=False, justify='center'))
                 
         return tables
         
-            
-        
     
     
-    # Preciso receber listas de valores para plotar
     def analyze(self, 
             name:list=[], 
             status:list=[], 

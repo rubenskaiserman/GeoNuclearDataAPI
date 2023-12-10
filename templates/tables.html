@@ -1,1 +1,4 @@
-<!DOCTYPE html> {% for table in tables%} {{ table }} {% endfor %}
+<!DOCTYPE html>
+{% for table in tables %}
+<div class="h-4/5 overflow-auto my-20">{{ table | safe }}</div>
+{% endfor %}

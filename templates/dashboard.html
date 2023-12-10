@@ -49,10 +49,10 @@
             resultsDiv = document.getElementById("analysis");
             resultsDiv.innerHTML = "";
 
-            const data = await response.json();
+            const data = await response.text();
             console.log(data);
 
-            resultsDiv.innerHTML = `${data.tables}`;
+            resultsDiv.innerHTML = `${data}`;
           });
         });
       }

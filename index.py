@@ -127,7 +127,7 @@ def analysis():
     result = analitics.analyze(**data)
     
     print(result)
-    return result
+    return render_template('tables.html', tables=result['tables'])
 
 
 @app.route('/dashboard', methods=['GET'])
