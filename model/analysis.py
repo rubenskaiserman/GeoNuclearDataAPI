@@ -80,7 +80,7 @@ class Analysis:
                 )
         
         return intersection
-    
+
     
     def tables(self, data:dict):
         intersection = self._gather_intersection_data(data)
@@ -98,9 +98,12 @@ class Analysis:
                 ))
                 
         return tables
+
   
     def graphs(self, data:dict):
         intersection = self._gather_intersection_data(data)
+        
+        
         
 
     def analyze(self, 
