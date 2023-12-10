@@ -20,16 +20,52 @@
 
         capacityLabel.innerHTML = `Capacity: ${capacity} (TW)`;
       }
+
+      function insertAnalysis() {}
+
+      async function generateAnalysis() {
+        const all_keys = fetch("/data/keys").then(async (response) => {
+          response = await response.json();
+          const keys = response.value;
+          const selected = {};
+          for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const checkboxes = document.querySelectorAll(`#${key} input[type=checkbox]:checked`);
+            const values = [];
+            for (let j = 0; j < checkboxes.length; j++) {
+              values.push(checkboxes[j].value);
+            }
+
+            selected[key] = values;
+          }
+
+          const analysis = fetch("./analysis", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(selected),
+          }).then(async (response) => {
+            resultsDiv = document.getElementById("analysis");
+            resultsDiv.innerHTML = "";
+
+            const data = await response.json();
+            console.log(data);
+
+            resultsDiv.innerHTML = `${JSON.stringify(data)}`;
+          });
+        });
+      }
     </script>
   </head>
   <body>
-    <div class="flex h-[80vh] m-7 text-center">
+    <div class="flex h-[70vh] m-7 text-center 2-full">
       {% for i in range(keys_length) %}
-      <div class="">
-        <h2 class="text-xl font-semibold text-center">{{ keys[i] }}</h2>
+      <div id="{{ keys[i] }}" class="w-full">
+        <h2 class="text-xl font-semibold text-center">{{ titles[i] }}</h2>
         <div class="h-full overflow-auto px-3 text-left">
           {% for item in columns[i] %}
-          <label class="text-lg font-medium"
+          <label class="text-base font-medium"
             ><input class="my-4" type="checkbox" value="{{ item }}" name="{{ item }}" /> {{
             item[:30] }}</label
           ><br />
@@ -52,6 +88,14 @@
         id="capacity"
         onchange="addRange()"
       />
+      <br />
+      <button
+        class="mt-5 px-5 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+        onclick="generateAnalysis()"
+      >
+        Generate Analysis
+      </button>
     </div>
+    <div id="analysis"></div>
   </body>
 </html>

@@ -97,6 +97,31 @@ def group_by_key(key):
         })
     )
 
+@app.route('/data/keys', methods=['GET'])
+def keys():
+    keys = db.keys.copy()
+    keys.remove('id')
+    keys.remove('source')
+    keys.remove('construction_start')
+    keys.remove('operational_from')
+    keys.remove('operational_to')
+    keys.remove('capacity')
+    
+    return Response(
+        content_type='text/json', 
+        response=json.dumps({
+            "success": True,
+            'value': keys,
+        })
+    )
+
+
+@app.route('/analysis', methods=['POST'])
+def analysis():
+    data = request.get_json()
+    
+    return data
+
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
@@ -112,9 +137,9 @@ def dashboard():
     for key in keys:
         columns.append([str(item) for item in db.unique(key)])
         
-    keys = [key.replace("_", " ").title() for key in keys]
+    titles = [key.replace("_", " ").title() for key in keys]
         
-    return render_template('dashboard.html', columns=columns, keys=keys, keys_length=len(keys))
+    return render_template('dashboard.html', columns=columns, titles=titles,keys=keys, keys_length=len(keys))
 
 
 if __name__ == '__main__':

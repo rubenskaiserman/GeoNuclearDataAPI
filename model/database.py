@@ -60,6 +60,7 @@ class Client(Database):
                 normalized_key = row[key].lower().replace(" ", "").replace("+", "")
             else:
                 normalized_key = row[key]
+                
             if normalized_key == value:
                 results.append(row)
                 
