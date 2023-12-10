@@ -1,4 +1,4 @@
-import database
+from model import database
 import json
 import pandas as pd
 import itertools
@@ -17,7 +17,7 @@ class Analysis:
     
     
     def _gather_data(self, 
-            names:list=[], 
+            name:list=[], 
             status:list=[], 
             country:list=[], 
             reactor_type:list=[], 
@@ -27,8 +27,8 @@ class Analysis:
         
         data = dict()
         
-        if len(names) > 0:
-            data['names'] = self._query_all('name' , names)
+        if len(name) > 0:
+            data['name'] = self._query_all('name' , name)
             
         if len(status) > 0:
             data['status'] = self._query_all('status' , status)
@@ -71,25 +71,28 @@ class Analysis:
         intersection = []
         
         len_data = len(data.keys())
-        for combination_numbers in range(2, len_data+1):
+        for combination_numbers in range(1, len_data+1):
             combinations = itertools.combinations(data.keys(), combination_numbers)
             for combination in combinations:
                 intersection.append(self._intersection({key:data[key] for key in combination}))
                 
+        
+        tables = []        
+        
         for table in intersection:
             if len(table) > 0:
                 df = pd.DataFrame(table)
+                tables.append(df.to_html(classes=''))
                 
-                print(df)
-        
+        return tables
         
             
         
     
     
     # Preciso receber listas de valores para plotar
-    def plot(self, 
-            names:list=[], 
+    def analyze(self, 
+            name:list=[], 
             status:list=[], 
             country:list=[], 
             reactor_type:list=[], 
@@ -98,7 +101,7 @@ class Analysis:
         ):  
         
         data = self._gather_data(
-            names=names, 
+            name=name, 
             status=status, 
             country=country, 
             reactor_type=reactor_type, 
@@ -108,52 +111,19 @@ class Analysis:
         
         tables = self.tables(data)
         
-        # print(tables)
-        
-            
-            
+        return {
+            'tables': tables,
+        }    
         # print(json.dumps(self._intersection(data), indent=4))
             
 
-teste = Analysis()
+if __name__ == '__main__':
+    teste = Analysis()
 
-# teste.plot(names=[
-#     "Leibstadt",
-#     "Columbia (WNP-2)",
-#     "Asco-1",
-#     "Kola-4",
-#     "Paks-2",
-#     "LaSalle-2",
-#     "Bruce-6",
-#     "Cruas-3",
-#     "Chinon-B2",
-#     "Maanshan-1",
-#     "Koeberg-1",
-#     "Gundremmingen-B",
-#     "Sendai-1",
-# ])
+    teste.analyze(
+        country=["Pakistan"], 
+        status=["Shutdown"], 
+        # reactor_type=["PWR"], 
+        # reactor_model=["PHWR KWU"], 
+    )
 
-teste.plot(
-    country=["Pakistan"], 
-    status=["Shutdown"], 
-    # reactor_type=["PWR"], 
-    # reactor_model=["PHWR KWU"], 
-)
-
-# names=[
-#     "Leibstadt",
-#     "Columbia (WNP-2)",
-#     "Asco-1",
-#     "Kola-4",
-#     "Paks-2",
-#     "LaSalle-2",
-#     "Bruce-6",
-#     "Cruas-3",
-#     "Chinon-B2",
-#     "Maanshan-1",
-#     "Koeberg-1",
-#     "Gundremmingen-B",
-#     "Sendai-1",
-# ]
-
-# print(list(itertools.combinations(names, 2)))

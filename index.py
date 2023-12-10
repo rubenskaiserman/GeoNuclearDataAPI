@@ -1,10 +1,12 @@
 from flask import Flask, Response, request, render_template
 from model import database, util
+from model import analysis
 import numpy as np
 import json
 
 app = Flask(__name__)
 db = database.Client()
+analitics = analysis.Analysis()
 helper = util.Client()
 
 @app.route('/', methods=['GET'])
@@ -120,7 +122,12 @@ def keys():
 def analysis():
     data = request.get_json()
     
-    return data
+    print(data)
+    
+    result = analitics.analyze(**data)
+    
+    print(result)
+    return result
 
 
 @app.route('/dashboard', methods=['GET'])
