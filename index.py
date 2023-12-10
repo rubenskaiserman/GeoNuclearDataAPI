@@ -120,12 +120,8 @@ def keys():
 @app.route('/analysis', methods=['POST'])
 def analysis():
     data = request.get_json()
-    
-    print(data)
-    
     result = analitics.analyze(**data)
     
-    print(result)
     return render_template('tables.html', tables=result['tables'])
 
 

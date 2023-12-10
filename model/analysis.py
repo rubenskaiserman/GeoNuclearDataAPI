@@ -2,6 +2,7 @@ from model import database
 import json
 import pandas as pd
 import itertools
+from matplotlib import pyplot as plt
 
 class Analysis:
     def __init__(self):
@@ -65,29 +66,43 @@ class Analysis:
             intersection_data.append(self.db.query('id', id)[0])    
             
         return intersection_data
-        
-    
-    def tables(self, data:dict):
+
+
+    def _gather_intersection_data(self, data):
         intersection = []
         
         len_data = len(data.keys())
         for combination_numbers in range(1, len_data+1):
             combinations = itertools.combinations(data.keys(), combination_numbers)
             for combination in combinations:
-                intersection.append(self._intersection({key:data[key] for key in combination}))
-                
+                intersection.append(
+                    self._intersection({key:data[key] for key in combination})
+                )
+        
+        return intersection
+    
+    
+    def tables(self, data:dict):
+        intersection = self._gather_intersection_data(data)
         
         tables = []        
         
         for table in intersection:
             if len(table) > 0:
                 df = pd.DataFrame(table)
-                tables.append(df.to_html(classes='my-12 mx-auto w-1/2 text-sm', border=1, index=False, justify='center'))
+                tables.append(df.to_html(
+                    classes='my-12 mx-auto w-1/2 text-sm', 
+                    border=1, 
+                    index=False, 
+                    justify='center'
+                ))
                 
         return tables
+  
+    def graphs(self, data:dict):
+        intersection = self._gather_intersection_data(data)
         
-    
-    
+
     def analyze(self, 
             name:list=[], 
             status:list=[], 
@@ -110,8 +125,7 @@ class Analysis:
         
         return {
             'tables': tables,
-        }    
-        # print(json.dumps(self._intersection(data), indent=4))
+        }
             
 
 if __name__ == '__main__':
