@@ -1,7 +1,6 @@
 from flask import Flask, Response, request, render_template
 from model import database, util
 from model import analysis
-import numpy as np
 import json
 
 app = Flask(__name__)
