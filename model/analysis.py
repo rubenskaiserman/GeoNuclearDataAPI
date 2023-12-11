@@ -374,13 +374,13 @@ class Analysis:
             images.append(graph)
 
             self.create_stack_graph(main_name='reactor_type', key_name='status', df=df, images=images,
-                                    title='Reactor Type by Status')
+            title='Reactor Type by Status')
 
             self.create_stack_graph(main_name='reactor_type', key_name='country', df=df, images=images,
-                                    title='Reactor Type by Country')
+            title='Reactor Type by Country')
 
             self.create_stack_graph(main_name='reactor_type', key_name='reactor_model', df=df, images=images,
-                                    title='Reactor Type by Reactor Model')
+            title='Reactor Type by Reactor Model')
 
             return images
 
@@ -409,47 +409,6 @@ class Analysis:
                                     title='Reactor Model by Reactor Type')
 
             return images
-    
-    # Multiplos status => Quantidade de reatores por status ##
-    # Multiplos status => Status Por país ##
-    # Multiplos status => Status por tipo de reator ##
-    # Multiplos status => Status por modelo de reator ##
-    # Multiplos status => Status por capacidade de reator
-    
-    # Multiplos países => Quantidade de reatores por país ##
-    # Multiplos países => Países por status ##
-    # Multiplos países => Países por tipo de reator ##
-    # Multiplos países => Países por modelo de reator ##
-    # Multiplos países => Países por capacidade de reator
-    # Multiplos países => Soma da energia por país ##
-    # Multiplos países => Soma da energia por tipo de reator
-    # Multiplos países => Soma da energia por modelo de reator
-    
-    # Multiplos tipos de reator => Quantidade de reatores por tipo de reator ##
-    # Multiplos tipos de reator => Tipos de reator por status ##
-    # Multiplos tipos de reator => Tipos de reator por país ##
-    # Multiplos tipos de reator => Tipos de reator por modelo de reator
-    # Multiplos tipos de reator => Tipos de reator por capacidade de reator
-    # Multiplos tipos de reator => Soma da energia por tipo de reator
-    
-    # Multiplos modelos de reator => Quantidade de reatores por modelo de reator
-    # Multiplos modelos de reator => Modelos de reator por status
-    # Multiplos modelos de reator => Modelos de reator por país
-    # Multiplos modelos de reator => Modelos de reator por tipo de reator
-    # Multiplos modelos de reator => Modelos de reator por capacidade de reator
-    # Multiplos modelos de reator => Soma da energia por modelo de reator
-    
-    # Capacidade de reator => Quantidade de reatores por capacidade de reator
-    # Capacidade de reator => Capacidade de reator por status
-    # Capacidade de reator => Capacidade de reator por país
-    # Capacidade de reator => Capacidade de reator por tipo de reator
-    # Capacidade de reator => Capacidade de reator por modelo de reator
-    
-    # Multiplos de alguma coluna com unidade de outra coluna segue os critérios da coluna que contém multiplos, mas limitada pela coluna com unidade.
-    
-    # Valor Ùnico de multiplas colunas => Mostrar todos os comparativos possíveis dentro da interseção dos valores
-    
-    # Multiplos de Multiplas Colunas => Mostrar todos os comparativos possíveis dentro da interseção dos valores
 
     def create_stack_graph(self, main_name: str, key_name: str, df, images, title: str):
         main_data = df[main_name].unique()
@@ -507,48 +466,28 @@ class Analysis:
             capacity=capacity,
         )
         
+        graphs = []
         tables = self.tables(data)
         
         if len(name) > 1:
-
-            graphs = self.graphs(by='name', data=data)
-            return {
-                'tables': tables,
-                'graphs': graphs,
-            }
+            graphs += self.graphs(by='name', data=data)
 
         if len(status) > 1:
-            graphs = self.graphs(by='status', data=data)
-            return {
-                'tables': tables,
-                'graphs': graphs
-            }
+            graphs += self.graphs(by='status', data=data)
 
         if len(country) > 1:
-            graphs = self.graphs(by='country', data=data)
-            return {
-                'tables': tables,
-                'graphs': graphs
-            }
+            graphs += self.graphs(by='country', data=data)
 
         if len(reactor_type) > 1:
-            graphs = self.graphs(by='reactor_type', data=data)
-            return {
-                'tables': tables,
-                'graphs': graphs
-            }
+            graphs += self.graphs(by='reactor_type', data=data)
 
         if len(reactor_model) > 1:
-            graphs = self.graphs(by='reactor_model', data=data)
-            return {
-                'tables': tables,
-                'graphs': graphs
-            }
+            graphs += self.graphs(by='reactor_model', data=data)
 
         
         return {
             'tables': tables,
-            'graphs': []
+            'graphs': graphs
         }
             
 

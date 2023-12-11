@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<div id="analysis" class="flex justify-center">
+<div id="analysis" class="flex justify-center flex-wrap">
   {% for graph in graphs %}
-  <img src="data:image/png;base64,{{ graph }}" alt="Matplotlib Plot" class="w-2/6" />
+  <img src="data:image/png;base64,{{ graph }}" alt="Matplotlib Plot" class="w-42" />
   {% endfor %}
 </div>
 
 {% for table in tables %}
-<div class="h-4/5 overflow-auto my-20 w-11/12 mx-auto">{{ table | safe }}</div>
+<div class="h-[50vh] overflow-auto my-6 w-11/12 mx-auto">{{ table | safe }}</div>
 {% endfor %}
