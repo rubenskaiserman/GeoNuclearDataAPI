@@ -2,6 +2,7 @@ from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import chromedriver_binary
 import csv
 
 from selenium import webdriver
@@ -27,7 +28,8 @@ class Webcrawler:
         # Instanciação do objeto Webdriver que coleta os dados
         options = ChromeOptions()
         options.headless = True
-        self.webdriver = Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        print(chromedriver_binary.chromedriver_filename)
+        self.webdriver = Chrome(executable_path=chromedriver_binary.chromedriver_filename, options=chrome_options)
 
         self.tables = list()
         try:
