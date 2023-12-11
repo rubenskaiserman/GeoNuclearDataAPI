@@ -144,7 +144,7 @@ class Analysis:
                 plt.xticks(fontsize=0)
                 plt.xlabel('Reactor Space', labelpad=10, fontsize=12)
                 
-            plt.ylabel('Capacity (GW)')   
+            plt.ylabel('Capacity (MW)')   
             plt.title('Reactor Capacity') 
             graph = self._save_graph(plt)
             plt.close()
