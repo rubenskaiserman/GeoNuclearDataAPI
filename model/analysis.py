@@ -15,6 +15,8 @@ class Analysis:
         
             
     def _query_all(self, key:str, items:list):
+        if self.db.data == []:
+            self.db.start() 
         if key == 'capacity':
             result = self.db.query_by_range(key=key, min=items - 1000, max=items + 1000)
                 
@@ -35,7 +37,8 @@ class Analysis:
             reactor_model:list=[],
             capacity:int=0,
         ):
-        
+        if self.db.data == []:
+            self.db.start() 
         data = {'parameters': dict()}
         
         if len(name) > 0:
@@ -58,7 +61,6 @@ class Analysis:
             data['reactor_model'] = self._query_all('reactor_model' , reactor_model)
             data['parameters']['reactor_model'] = reactor_model
             
-        print(capacity)
         if capacity > 0:
             data['capacity'] = self._query_all('capacity' , capacity)
             data['parameters']['capacity'] = capacity
@@ -79,6 +81,8 @@ class Analysis:
                 intersection_ids.append(id)
                 
         intersection_data = []
+        if self.db.data == []:
+            self.db.start() 
         for id in intersection_ids:
             intersection_data.append(self.db.query('id', id)[0])    
             
@@ -109,13 +113,18 @@ class Analysis:
         for table in intersection:
             if len(table) > 0:
                 df = pd.DataFrame(table)
+                df.drop(columns=['source', 'iaeaid', 'last_updated'], inplace=True)
+                
                 tables.append(df.to_html(
-                    classes='my-12 mx-auto w-1/2 text-sm', 
+                    classes='my-12 mx-auto w-1/2 text-sm',
+                    col_space=100,
                     border=1, 
                     index=False, 
                     justify='center'
                 ))
                 
+        print(len(tables))
+        
         return tables
 
     def _save_graph(self, graph:plt)->base64:
@@ -129,6 +138,7 @@ class Analysis:
     # Multiplos nomes => Quais foram os tipos de reatores selecionadas
     def graphs(self, by:str, data:dict):
         images = []
+        
         if by == 'name':
             results = data['name']
             df = pd.DataFrame(results)
@@ -495,11 +505,12 @@ class Analysis:
             reactor_type=reactor_type, 
             reactor_model=reactor_model,
             capacity=capacity,
-        )    
+        )
         
         tables = self.tables(data)
         
         if len(name) > 1:
+
             graphs = self.graphs(by='name', data=data)
             return {
                 'tables': tables,
@@ -533,6 +544,7 @@ class Analysis:
                 'tables': tables,
                 'graphs': graphs
             }
+
         
         return {
             'tables': tables,

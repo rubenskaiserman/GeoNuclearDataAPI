@@ -1,5 +1,8 @@
 import pandas as pd
 from abc import ABC, abstractmethod
+from model import wikicrawler
+import io
+import csv
 
 class Database(ABC):
     @abstractmethod
@@ -20,8 +23,7 @@ class Database(ABC):
 
 class Client(Database):
     def __init__(self):
-        df = pd.read_csv('./data/data.csv')
-        self.data = df.to_dict('records')
+        self.wikicrawler = wikicrawler.Webcrawler()
         self.__keys = [
             'id',
             'name',
@@ -35,6 +37,17 @@ class Client(Database):
             'capacity',
             'source',
         ]
+        self.data = []    
+
+
+    def start(self):
+        self.wikicrawler.generate_csv_data()
+        csv_data = self.wikicrawler.csv_string
+        csv_buffer = io.StringIO(csv_data)
+        
+        df = pd.read_csv(csv_buffer)
+        self.data = df.to_dict('records')
+
     
     @property
     def keys(self):
@@ -110,3 +123,12 @@ class Client(Database):
                 results.append(row)
                 
         return results
+
+    def update(self):
+        self.wikicrawler = wikicrawler.Webcrawler()
+        wikicrawler.generate_csv_data()
+        csv_data = self.wikicrawler.csv_string
+        csv_buffer = io.StringIO(csv_data)
+        
+        df = pd.read_csv(csv_buffer)
+        self.data = df.to_dict('records')

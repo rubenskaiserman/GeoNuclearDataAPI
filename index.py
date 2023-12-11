@@ -1,6 +1,5 @@
 from flask import Flask, Response, request, render_template
-from model import database, util
-from model import analysis
+from model import database, util, analysis
 import json
 
 app = Flask(__name__)
@@ -25,6 +24,7 @@ def page_not_found(e):
 @app.route('/data', methods=['GET'])
 def data_index():
     return  render_template('httpcat.html', title="/data", image="https://http.cat/204")
+
     
 @app.route('/data/<key>/<value>', methods=['GET'])
 def select_where(key, value):
@@ -72,7 +72,7 @@ def select_unique(key):
             'value': response,
         })
     )
-    
+
 @app.route('/data/count/<key>/all', methods=['GET'])
 def group_by_key(key):
     if key not in db.keys:
@@ -116,20 +116,19 @@ def keys():
         })
     )
 
-
 @app.route('/analysis', methods=['POST'])
 def analysis():
     data = request.get_json()
     
-    print(data)
     result = analitics.analyze(**data)
     
-    return render_template('image.html', graphs=result['graphs'])
-    # return render_template('tables.html', tables=result['tables'])
-
+    
+    return render_template('results.html', tables=result['tables'], graphs=result['graphs'])
+    
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
+    db.start()
     keys = db.keys.copy()
     keys.remove('id')
     keys.remove('source')
@@ -146,6 +145,12 @@ def dashboard():
         
     return render_template('dashboard.html', columns=columns, titles=titles,keys=keys, keys_length=len(keys))
 
+@app.route('/dashboard/download', methods=['POST'])
+def download():
+    data = request.get_json()
+    print(data)
+    
+    return {'success': True}
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

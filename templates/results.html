@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<div id="analysis" class="flex justify-center">
+  {% for graph in graphs %}
+  <img src="data:image/png;base64,{{ graph }}" alt="Matplotlib Plot" class="w-2/6" />
+  {% endfor %}
+</div>
+
+{% for table in tables %}
+<div class="h-4/5 overflow-auto my-20 w-11/12 mx-auto">{{ table | safe }}</div>
+{% endfor %}
