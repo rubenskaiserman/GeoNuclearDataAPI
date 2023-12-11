@@ -11,10 +11,10 @@ import base64
 class Analysis:
     def __init__(self):
         self.db = database.Client()
-        self.db.start()
         
             
     def _query_all(self, key:str, items:list):
+        self.db.start()
         if key == 'capacity':
             result = self.db.query_by_range(key=key, min=items - 1000, max=items + 1000)
                 
@@ -35,7 +35,7 @@ class Analysis:
             reactor_model:list=[],
             capacity:int=0,
         ):
-        
+        self.db.start()
         data = {'parameters': dict()}
         
         if len(name) > 0:
@@ -78,6 +78,7 @@ class Analysis:
                 intersection_ids.append(id)
                 
         intersection_data = []
+        self.db.start()
         for id in intersection_ids:
             intersection_data.append(self.db.query('id', id)[0])    
             
