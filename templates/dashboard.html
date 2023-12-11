@@ -36,7 +36,10 @@
               values.push(checkboxes[j].value);
             }
 
+            capacityDiv = document.getElementById("capacity");
+            capacity = capacityDiv.value;
             selected[key] = values;
+            selected["capacity"] = Number(capacity);
           }
 
           const analysis = fetch("./analysis", {
@@ -96,6 +99,6 @@
         Generate Analysis
       </button>
     </div>
-    <div id="analysis"></div>
+    <div id="analysis" class="mb-96 flex"></div>
   </body>
 </html>

@@ -100,3 +100,13 @@ class Client(Database):
                 
         return result
 
+    def query_by_range(self, key:str, min:int, max:int)->list[dict]:
+        if type(key) == str:
+            key = key.lower().replace(" ", "").replace("+", "")
+        
+        results = []
+        for row in self.data:
+            if min <= row[key] <= max:
+                results.append(row)
+                
+        return results
