@@ -118,7 +118,6 @@ class Analysis:
         return tables
 
     def _save_graph(self, graph:plt)->base64:
-        plt.title('Reactors Capacity')
         buffer = BytesIO()
         plt.savefig(buffer, format='png')
         buffer.seek(0)     
@@ -145,7 +144,8 @@ class Analysis:
                 plt.xticks(fontsize=0)
                 plt.xlabel('Reactor Space', labelpad=10, fontsize=12)
                 
-            plt.ylabel('Capacity (TW)')    
+            plt.ylabel('Capacity (TW)')   
+            plt.title('Reactor Capacity') 
             graph = self._save_graph(plt)
             plt.close()
             
