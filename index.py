@@ -118,10 +118,12 @@ def keys():
 
 @app.route('/analysis', methods=['POST'])
 def analysis():
+    db.update()
     data = request.get_json()
     
     print(data)
     result = analitics.analyze(**data)
+    
     
     return render_template('image.html', graphs=result['graphs'])
     # return render_template('tables.html', tables=result['tables'])
@@ -129,8 +131,7 @@ def analysis():
 
 @app.route('/update', methods=['POST'])
 def update():
-    print('Updating database.')
-    update = wikicrawler.Webcrawler()
+    
     
     return {
         'status': 'on',

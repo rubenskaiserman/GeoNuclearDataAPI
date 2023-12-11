@@ -1,6 +1,11 @@
 import pandas as pd
 from abc import ABC, abstractmethod
 
+import wikicrawler
+
+import io
+import csv
+
 class Database(ABC):
     @abstractmethod
     def query(self, key:str, value:str)->list[dict]:
@@ -20,7 +25,11 @@ class Database(ABC):
 
 class Client(Database):
     def __init__(self):
-        df = pd.read_csv('./data/data.csv')
+        self.wikicrawler = wikicrawler.Webcrawler()
+        csv_data = self.wikicrawler.csv_string
+        csv_buffer = io.StringIO(csv_data)
+        
+        df = pd.read_csv(csv_buffer)
         self.data = df.to_dict('records')
         self.__keys = [
             'id',
@@ -110,3 +119,11 @@ class Client(Database):
                 results.append(row)
                 
         return results
+
+    def update(self):
+        self.wikicrawler = wikicrawler.Webcrawler()
+        csv_data = self.wikicrawler.csv_string
+        csv_buffer = io.StringIO(csv_data)
+        
+        df = pd.read_csv(csv_buffer)
+        self.data = df.to_dict('records')

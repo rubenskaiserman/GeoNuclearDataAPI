@@ -1,63 +1,57 @@
-from selenium.webdriver import Chrome, ChromeOptions
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-import chromedriver_binary
+import requests
+from bs4 import BeautifulSoup
 import csv
-
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-
-chrome_options = Options()
-chrome_options.add_argument("--headless")
-
-# browser = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=chrome_options)
-
 import time
+import csv
+import io
 
 
 # Classe que atualiza o arquivo data.csv quando instanciada.
 class Webcrawler:
     def __init__(self):
         steps = 1
-        
-        # XPath modular que define cada tabela da página
+
         self.__default_xpath = "/html/body/div[2]/div/div[3]/main/div[3]/div[3]/div[1]/table[%%]"
 
-        # Instanciação do objeto Webdriver que coleta os dados
-        options = ChromeOptions()
-        options.headless = True
-        print(chromedriver_binary.chromedriver_filename)
-        self.webdriver = Chrome(executable_path=chromedriver_binary.chromedriver_filename, options=chrome_options)
-
-        self.tables = list()
         try:
-            # Método que acessa a página da Wikipedia
-            self.webdriver.get("https://en.wikipedia.org/wiki/List_of_commercial_nuclear_reactors")
+            # Realiza a request e obtém o conteúdo HTML
+            response = requests.get('https://en.wikipedia.org/wiki/List_of_commercial_nuclear_reactors')
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
 
+            # print(soup)
             # Coleta dos países presentes na página
-            self.countries = [item.text for item in self.webdriver.find_elements(By.CLASS_NAME, "mw-headline")[:-4]]
+            self.countries = [item.text for item in soup.find_all('span', {'class': 'mw-headline'})[:-4]]
+            
 
             # Acesso e coleta dos dados de cada tabela
+            self.tables = []
             for index in range(1, len(self.countries) + 1):
-                print(f"Step: {steps}")
-                steps +=1
-                
-                table = self.webdriver.find_element(By.XPATH, self.__default_xpath.replace("%%", str(index)))
-                rows = table.find_elements(By.XPATH, "./tbody/tr")
+                table = soup.find_all('table', {'class': 'wikitable'})
+                rows = table[index - 1].find_all('tr')
+                print("Rows separated")
                 tlist = self.format_table_list(rows)
+                print("Tlist separated")
                 self.tables.append(tlist)
+
+                print(f"Step: {steps}")
+                steps += 1
 
             # Montagem de uma lista com os dados completos de cada reator
             self.full_data = self.assemble_full_data()
 
             # Montagem do arquivo data.csv
-            self.assemble_csv_file("./data/data1")
+            temp_csv_string = self.assemble_csv_string()
+            self.__csv_string = temp_csv_string
+            
+        except Exception as e:
+            print(f"Error: {e}")
         finally:
+            print("Execution complete.")
 
-            # Fechamento do navegador
-            self.webdriver.close()
+    @property
+    def csv_string(self):
+        return self.__csv_string
 
     @property
     def default_xpath(self):
@@ -67,9 +61,9 @@ class Webcrawler:
     def default_xpath(self, value):
         raise Exception("Default XPath can't be altered.")
 
-    # Método que realiza a refatoração das unidades de cada usina que não têm os dados completos.
     @staticmethod
     def include_plant_name(tlist: list[list]) -> list:
+        tlist.pop(0)
         if length := len(tlist[0]) > 9:
             tlist = [item[:9-length] for item in tlist]
         new_list = list()
@@ -84,39 +78,40 @@ class Webcrawler:
                     new_list.append(element)
         return new_list
 
-    # Método que transforma cada tabela em uma lista de todos os reatores.
     def format_table_list(self, rows) -> list:
-        start = time.time() 
-        
+        start = time.time()
+
         tlist = list()
         for row in rows:
-            data = list()
-            for item in row.find_elements(By.XPATH, './td'):
-                item = item.text
-                if '[' in item:
-                    index = item.index('[')
-                    item = item[:index]
-                data.append(item)
+            data = [item.get_text(strip=True) for item in row.find_all(['td', 'th'])]
             tlist.append(data)
+
         tlist = self.include_plant_name(tlist)
         for unit in tlist:
             capacity = unit[5]
             if '\n' in capacity:
                 parsed = capacity.split('\n')
-                parsed = [float(value) for value in parsed]
+                new_parsed = []
+                print(parsed)
+                for value in parsed:
+                    if '[' in value:
+                        value = value[:value.index('[')]
+                    new_parsed.append(float(value))
+                parsed = new_parsed
                 average_capacity = sum(parsed)/len(parsed)
                 unit[5] = average_capacity
             if capacity == '':
                 unit[5] = 0
             else:
+                if '[' in unit[5]:
+                    unit[5] = unit[5][:unit[5].index('[')]
                 unit[5] = float(unit[5])
                 
             end = time.time()
-            print(f"Time: {end-start}")    
-            
+            print(f"Time: {end-start}")
+
         return tlist
 
-    # Método que constroi a lista com todos os reatores separados
     def assemble_full_data(self):
         full_data_list = list()
         if len(self.countries) != len(self.tables):
@@ -127,19 +122,24 @@ class Webcrawler:
                 full_data_list.append(plant)
         return full_data_list
 
-    # Método que escreve o arquivo data.csv
-    def assemble_csv_file(self, fpath: str):
-        with open(f'{fpath}.csv', 'w+', encoding='utf-8') as csvfile:
-            writer = csv.writer(csvfile)
-            fields = ['id', 'name', 'country', 'status', 'reactor_type', 'reactor_model', 'construction_start',
-                      'operational_from', 'operational_to', 'capacity', 'last_updated', 'source', 'iaeaid']
-            writer.writerow(fields)
-            for index in range(len(self.full_data)):
-                row = self.make_csv_row(self.full_data[index], index)
-                writer.writerow(row)
-            csvfile.close()
+    def assemble_csv_string(self):
+        csv_string_io = io.StringIO()
+        writer = csv.writer(csv_string_io)
+        
+        fields = ['id', 'name', 'country', 'status', 'reactor_type', 'reactor_model', 'construction_start',
+                'operational_from', 'operational_to', 'capacity', 'last_updated', 'source', 'iaeaid']
+        writer.writerow(fields)
 
-    # Método que reordena e adiciona os valores para o registro do arquivo data.csv
+        for index in range(len(self.full_data)):
+            row = self.make_csv_row(self.full_data[index], index)
+            writer.writerow(row)
+
+        csv_content = csv_string_io.getvalue()
+        csv_string_io.close()
+
+        return csv_content
+
+
     @staticmethod
     def make_csv_row(rdata: list, idd: int) -> list:
         newlist = [idd, rdata[1]+'-'+rdata[2], rdata[0], rdata[5], rdata[3], rdata[4], rdata[7], rdata[8], rdata[9],
