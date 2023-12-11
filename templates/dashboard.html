@@ -14,11 +14,11 @@
         const capacityLabel = document.getElementById("capacity-label");
 
         if (capacity == 0) {
-          capacityLabel.innerHTML = "Capacity: Not Selected (TW)";
+          capacityLabel.innerHTML = "Capacity: Not Selected (GW)";
           return;
         }
 
-        capacityLabel.innerHTML = `Capacity: ${capacity} (TW)`;
+        capacityLabel.innerHTML = `Capacity: ${capacity} (GW)`;
       }
 
       function insertAnalysis() {}
@@ -78,7 +78,7 @@
       {% endfor %}
     </div>
     <div class="mt-10 text-center">
-      <label for="capacity" id="capacity-label"> Capacity: Not Selected (TW) </label>
+      <label for="capacity" id="capacity-label"> Capacity: Not Selected (GW) </label>
       <br />
       <input
         class="w-96"
