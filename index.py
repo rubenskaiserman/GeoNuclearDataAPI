@@ -118,7 +118,8 @@ def keys():
 
 @app.route('/analysis', methods=['POST'])
 def analysis():
-    db.update()
+    if db.data == []:
+        db.start()
     data = request.get_json()
     
     print(data)
@@ -131,6 +132,8 @@ def analysis():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
+    if db.data == []:
+        db.start()
     keys = db.keys.copy()
     keys.remove('id')
     keys.remove('source')

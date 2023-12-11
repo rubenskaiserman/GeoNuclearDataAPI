@@ -24,12 +24,6 @@ class Database(ABC):
 class Client(Database):
     def __init__(self):
         self.wikicrawler = wikicrawler.Webcrawler()
-        self.wikicrawler.generate_csv_data()
-        csv_data = self.wikicrawler.csv_string
-        csv_buffer = io.StringIO(csv_data)
-        
-        df = pd.read_csv(csv_buffer)
-        self.data = df.to_dict('records')
         self.__keys = [
             'id',
             'name',
@@ -43,6 +37,17 @@ class Client(Database):
             'capacity',
             'source',
         ]
+        self.data = []    
+
+
+    def start(self):
+        self.wikicrawler.generate_csv_data()
+        csv_data = self.wikicrawler.csv_string
+        csv_buffer = io.StringIO(csv_data)
+        
+        df = pd.read_csv(csv_buffer)
+        self.data = df.to_dict('records')
+
     
     @property
     def keys(self):
