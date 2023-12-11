@@ -7,6 +7,7 @@ import itertools
 from matplotlib import pyplot as plt
 from io import BytesIO
 import base64
+import numpy as np
 
 class Analysis:
     def __init__(self):
@@ -191,41 +192,242 @@ class Analysis:
             images.append(graph)
             
             return images
-        
-        
-        
-        
-        
-        
+
         if by == 'status':
-            pass
+            results = data['status']
+            df = pd.DataFrame(results)
+            df = df.sort_values(by=['status'], ascending=False)
+            stat_list = df['status'].tolist()
+            x = df['status'].unique()
+            y = [stat_list.count(stat) for stat in x]
+
+            if len(x) <= 5:
+                self.gen_graph('pie', y, x)
+            else:
+                self.gen_graph('bar', y, x, config={'rotation': -25, 'ha': 'left'})
+
+            plt.title('Reactors by Status')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            stat_list = df['status'].unique()
+            countries = df['country'].unique()
+            ystack = {stat: [0 for _ in countries] for stat in stat_list}
+
+            for stat in stat_list:
+                filtered_countries = df.loc[df['status'] == stat]['country'].tolist()
+                for i in range(len(countries)):
+                    ystack[stat][i] = filtered_countries.count(countries[i])
+
+            self.gen_graph('stack', reference_data=countries, main_data=ystack,
+                           stack_bar_bottom=np.zeros(len(countries)),
+                           config={'rotation': -90, 'ha': 'left'})
+            plt.title('Status by Country')
+            graph = self._save_graph(plt)
+            plt.close()
+
+            images.append(graph)
+
+            stat_list = df['status'].unique()
+            rtype = df['reactor_type'].unique()
+            ystack = {stat: [0 for _ in rtype] for stat in stat_list}
+
+            for stat in stat_list:
+                filtered_rtype = df.loc[df['status'] == stat]['reactor_type'].tolist()
+                for i in range(len(rtype)):
+                    ystack[stat][i] = filtered_rtype.count(rtype[i])
+
+            self.gen_graph('stack', reference_data=[str(item) for item in rtype], main_data=ystack,
+                           stack_bar_bottom=np.zeros(len(rtype)),
+                           config={'rotation': -90, 'ha': 'left'})
+
+            plt.title('Status by Reactor Type')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            stat_list = df['status'].unique()
+            model = df['reactor_model'].unique()
+            if len(model) < 20:
+                ystack = {stat: [0 for _ in model] for stat in stat_list}
+
+                for stat in stat_list:
+                    filtered_model = df.loc[df['status'] == stat]['reactor_model'].tolist()
+                    for i in range(len(rtype)):
+                        ystack[stat][i] = filtered_model.count(model[i])
+
+                self.gen_graph('stack', reference_data=[str(item) for item in model], main_data=ystack,
+                               stack_bar_bottom=np.zeros(len(model)),
+                               config={'rotation': -90, 'ha': 'left'})
+
+                plt.title('Status by Reactor Model')
+                graph = self._save_graph(plt)
+                plt.close()
+                images.append(graph)
+
+            return images
+
         if by == 'country':
-            pass
+            results = data['country']
+            df = pd.DataFrame(results)
+            df = df.sort_values(by=['status'], ascending=False)
+
+            countries_u = df['country'].unique()
+            amount = []
+            for country in countries_u:
+                amount.append(df['country'].tolist().count(country))
+
+            self.gen_graph('bar', main_data=amount, reference_data=countries_u)
+            plt.xticks(rotation=-25, ha='left')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            stat_list = df['status'].unique()
+            countries = df['country'].unique()
+            ystack = {stat: [0 for _ in countries] for stat in stat_list}
+
+            for stat in stat_list:
+                filtered_countries = df.loc[df['status'] == stat]['country'].tolist()
+                for i in range(len(countries)):
+                    ystack[stat][i] = filtered_countries.count(countries[i])
+
+            self.gen_graph('stack', reference_data=[str(item) for item in countries], main_data=ystack,
+                           stack_bar_bottom=np.zeros(len(countries)),
+                           config={'rotation': -90, 'ha': 'left'})
+            plt.title('Status by Country')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            main_name = 'country'
+            key_name = 'reactor_type'
+            main_data = df[main_name].unique()
+            key_data = df[key_name].unique()
+            ystack = {main: [0 for _ in key_data] for main in main_data}
+
+            for main in main_data:
+                filtered_key = df.loc[df[main_name] == main][key_name].tolist()
+                for i in range(len(key_data)):
+                    ystack[main][i] = filtered_key.count(key_data[i])
+
+            self.gen_graph('stack', reference_data=[str(item) for item in key_data], main_data=ystack,
+                           stack_bar_bottom=np.zeros(len(key_data)),
+                           config={'rotation': -90, 'ha': 'left'})
+            plt.title('Reactor Type by Country')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            main_name = 'country'
+            key_name = 'reactor_model'
+            main_data = df[main_name].unique()
+            key_data = df[key_name].unique()
+            ystack = {main: [0 for _ in key_data] for main in main_data}
+
+            for main in main_data:
+                filtered_key = df.loc[df[main_name] == main][key_name].tolist()
+                for i in range(len(key_data)):
+                    ystack[main][i] = filtered_key.count(key_data[i])
+
+            self.gen_graph('stack', reference_data=[str(item) for item in key_data], main_data=ystack,
+                           stack_bar_bottom=np.zeros(len(key_data)),
+                           config={'rotation': -90, 'ha': 'left'})
+            plt.title('Reactor Model by Country')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            main_name = 'country'
+            key_name = 'capacity'
+            main_data = df[main_name].unique()
+            key_data = df[key_name].unique()
+            ystack = {main: 0 for main in main_data}
+
+            for main in main_data:
+                filtered_key = df.loc[df[main_name] == main][key_name].tolist()
+                ystack[main] = sum(filtered_key)
+
+            self.gen_graph('bar', reference_data=list(ystack.keys()), main_data=list(ystack.values()),
+                           config={'rotation': -90, 'ha': 'left'})
+            plt.title('Energy Sum by Country')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            return images
+
         if by == 'reactor_type':
-            pass
+            results = data['reactor_type']
+            df = pd.DataFrame(results)
+            df = df.sort_values(by=['reactor_type'], ascending=False)
+
+            types_u = df['reactor_type'].unique()
+            amount = []
+            for rtype in types_u:
+                amount.append(df['reactor_type'].tolist().count(rtype))
+            self.gen_graph('bar', main_data=amount, reference_data=types_u)
+            plt.xticks(rotation=-25, ha='left')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            self.create_stack_graph(main_name='reactor_type', key_name='status', df=df, images=images,
+                                    title='Reactor Type by Status')
+
+            self.create_stack_graph(main_name='reactor_type', key_name='country', df=df, images=images,
+                                    title='Reactor Type by Country')
+
+            self.create_stack_graph(main_name='reactor_type', key_name='reactor_model', df=df, images=images,
+                                    title='Reactor Type by Reactor Model')
+
+            return images
+
         if by == 'reactor_model':
-            pass
-        if by == 'capacity':
-            pass
+            results = data['reactor_model']
+            df = pd.DataFrame(results)
+            df = df.sort_values(by=['reactor_model'], ascending=False)
+
+            models_u = df['reactor_model'].unique()
+            amount = []
+            for model in models_u:
+                amount.append(df['reactor_model'].tolist().count(model))
+            self.gen_graph('bar', main_data=amount, reference_data=models_u)
+            plt.xticks(rotation=-25, ha='left')
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+            self.create_stack_graph(main_name='reactor_model', key_name='status', df=df, images=images,
+                                    title='Reactor Model by Status')
+
+            self.create_stack_graph(main_name='reactor_model', key_name='country', df=df, images=images,
+                                    title='Reactor Model by Country')
+
+            self.create_stack_graph(main_name='reactor_model', key_name='reactor_type', df=df, images=images,
+                                    title='Reactor Model by Reactor Type')
+
+            return images
     
-    # Multiplos status => Quantidade de reatores por status
-    # Multiplos status => Status Por país
-    # Multiplos status => Status por tipo de reator
-    # Multiplos status => Status por modelo de reator
+    # Multiplos status => Quantidade de reatores por status ##
+    # Multiplos status => Status Por país ##
+    # Multiplos status => Status por tipo de reator ##
+    # Multiplos status => Status por modelo de reator ##
     # Multiplos status => Status por capacidade de reator
     
-    # Multiplos países => Quantidade de reatores por país
-    # Multiplos países => Países por status
-    # Multiplos países => Países por tipo de reator
-    # Multiplos países => Países por modelo de reator
+    # Multiplos países => Quantidade de reatores por país ##
+    # Multiplos países => Países por status ##
+    # Multiplos países => Países por tipo de reator ##
+    # Multiplos países => Países por modelo de reator ##
     # Multiplos países => Países por capacidade de reator
-    # Multiplos países => Soma da energia por país
+    # Multiplos países => Soma da energia por país ##
     # Multiplos países => Soma da energia por tipo de reator
     # Multiplos países => Soma da energia por modelo de reator
     
-    # Multiplos tipos de reator => Quantidade de reatores por tipo de reator
-    # Multiplos tipos de reator => Tipos de reator por status
-    # Multiplos tipos de reator => Tipos de reator por país
+    # Multiplos tipos de reator => Quantidade de reatores por tipo de reator ##
+    # Multiplos tipos de reator => Tipos de reator por status ##
+    # Multiplos tipos de reator => Tipos de reator por país ##
     # Multiplos tipos de reator => Tipos de reator por modelo de reator
     # Multiplos tipos de reator => Tipos de reator por capacidade de reator
     # Multiplos tipos de reator => Soma da energia por tipo de reator
@@ -248,8 +450,44 @@ class Analysis:
     # Valor Ùnico de multiplas colunas => Mostrar todos os comparativos possíveis dentro da interseção dos valores
     
     # Multiplos de Multiplas Colunas => Mostrar todos os comparativos possíveis dentro da interseção dos valores
-        
-        
+
+    def create_stack_graph(self, main_name: str, key_name: str, df, images, title: str):
+        main_data = df[main_name].unique()
+        key_data = df[key_name].unique()
+        if len(key_data) < 50:
+            ystack = {main: [0 for _ in key_data] for main in main_data}
+
+            for main in main_data:
+                filtered_key = df.loc[df[main_name] == main][key_name].tolist()
+                for i in range(len(key_data)):
+                    ystack[main][i] = filtered_key.count(key_data[i])
+
+            self.gen_graph('stack', reference_data=[str(item) for item in key_data], main_data=ystack,
+                           stack_bar_bottom=np.zeros(len(key_data)),
+                           config={'rotation': -90, 'ha': 'left'})
+            plt.title(title)
+            graph = self._save_graph(plt)
+            plt.close()
+            images.append(graph)
+
+    @staticmethod
+    def gen_graph(form: str, main_data, reference_data, stack_bar_bottom=None, config: dict = None):
+        if config is None:
+            config = {}
+        if form == 'pie':
+            plt.pie(main_data, labels=reference_data)
+        if form == 'bar':
+            plt.bar(reference_data, main_data)
+        if form == 'stack':
+            fig, ax = plt.subplots()
+            for label, amount in main_data.items():
+                ax.bar(reference_data, amount, label=label, bottom=stack_bar_bottom)
+                stack_bar_bottom += amount
+            ax.legend(loc='upper right')
+        plt.xticks(**config)
+
+
+        return plt
 
     def analyze(self, 
             name:list=[], 
@@ -271,18 +509,46 @@ class Analysis:
         
         tables = self.tables(data)
         
-        graphs = []
-        if len(name) > 1 and capacity == 0:
+        if len(name) > 1:
+
             graphs = self.graphs(by='name', data=data)
             return {
                 'tables': tables,
                 'graphs': graphs,
             }
-        
-        
+
+        if len(status) > 1:
+            graphs = self.graphs(by='status', data=data)
+            return {
+                'tables': tables,
+                'graphs': graphs
+            }
+
+        if len(country) > 1:
+            graphs = self.graphs(by='country', data=data)
+            return {
+                'tables': tables,
+                'graphs': graphs
+            }
+
+        if len(reactor_type) > 1:
+            graphs = self.graphs(by='reactor_type', data=data)
+            return {
+                'tables': tables,
+                'graphs': graphs
+            }
+
+        if len(reactor_model) > 1:
+            graphs = self.graphs(by='reactor_model', data=data)
+            return {
+                'tables': tables,
+                'graphs': graphs
+            }
+
         
         return {
             'tables': tables,
+            'graphs': []
         }
             
 
