@@ -122,13 +122,11 @@ def analysis():
         db.start()
     data = request.get_json()
     
-    print(data)
     result = analitics.analyze(**data)
     
     
-    return render_template('image.html', graphs=result['graphs'])
-    # return render_template('tables.html', tables=result['tables'])
-
+    return render_template('results.html', tables=result['tables'], graphs=result['graphs'])
+    
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():

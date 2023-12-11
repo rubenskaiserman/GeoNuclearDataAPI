@@ -115,6 +115,8 @@ class Analysis:
                     justify='center'
                 ))
                 
+        print(len(tables))
+        
         return tables
 
     def _save_graph(self, graph:plt)->base64:
@@ -196,7 +198,8 @@ class Analysis:
             pass
         if by == 'reactor_model':
             pass
-        
+        if by == 'capacity':
+            pass
     
     # Multiplos status => Quantidade de reatores por status
     # Multiplos status => Status Por país
@@ -257,17 +260,18 @@ class Analysis:
             reactor_type=reactor_type, 
             reactor_model=reactor_model,
             capacity=capacity,
-        )    
+        )
         
         tables = self.tables(data)
         
+        graphs = []
         if len(name) > 1 and capacity == 0:
             graphs = self.graphs(by='name', data=data)
             return {
                 'tables': tables,
                 'graphs': graphs,
             }
-
+        
         
         
         return {

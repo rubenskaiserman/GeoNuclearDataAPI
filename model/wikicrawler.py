@@ -19,7 +19,6 @@ class Webcrawler:
             
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            # print(soup)
             # Coleta dos países presentes na página
             self.countries = [item.text for item in soup.find_all('span', {'class': 'mw-headline'})[:-4]]
             
@@ -29,9 +28,7 @@ class Webcrawler:
             for index in range(1, len(self.countries) + 1):
                 table = soup.find_all('table', {'class': 'wikitable'})
                 rows = table[index - 1].find_all('tr')
-                print("Rows separated")
                 tlist = self.format_table_list(rows)
-                print("Tlist separated")
                 self.tables.append(tlist)
 
                 print(f"Step: {steps}")
@@ -92,7 +89,6 @@ class Webcrawler:
             if '\n' in capacity:
                 parsed = capacity.split('\n')
                 new_parsed = []
-                print(parsed)
                 for value in parsed:
                     if '[' in value:
                         value = value[:value.index('[')]
@@ -108,7 +104,7 @@ class Webcrawler:
                 unit[5] = float(unit[5])
                 
             end = time.time()
-            print(f"Time: {end-start}")
+            # print(f"Time: {end-start}")
 
         return tlist
 
