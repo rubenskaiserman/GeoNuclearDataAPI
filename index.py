@@ -1,6 +1,5 @@
 from flask import Flask, Response, request, render_template
-from model import database, util
-from model import analysis
+from model import database, util, analysis, wikicrawler
 import json
 
 app = Flask(__name__)
@@ -127,6 +126,16 @@ def analysis():
     return render_template('image.html', graphs=result['graphs'])
     # return render_template('tables.html', tables=result['tables'])
 
+
+@app.route('/update', methods=['POST'])
+def update():
+    print('Updating database.')
+    update = wikicrawler.Webcrawler()
+    
+    return {
+        'status': 'on',
+        'message': 'Updating database.'
+    }
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():

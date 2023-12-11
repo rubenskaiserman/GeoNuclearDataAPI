@@ -4,10 +4,14 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import csv
 
+import time
+
 
 # Classe que atualiza o arquivo data.csv quando instanciada.
 class Webcrawler:
     def __init__(self):
+        steps = 1
+        
         # XPath modular que define cada tabela da página
         self.__default_xpath = "/html/body/div[2]/div/div[3]/main/div[3]/div[3]/div[1]/table[%%]"
 
@@ -26,6 +30,9 @@ class Webcrawler:
 
             # Acesso e coleta dos dados de cada tabela
             for index in range(1, len(self.countries) + 1):
+                print(f"Step: {steps}")
+                steps +=1
+                
                 table = self.webdriver.find_element(By.XPATH, self.__default_xpath.replace("%%", str(index)))
                 rows = table.find_elements(By.XPATH, "./tbody/tr")
                 tlist = self.format_table_list(rows)
@@ -35,7 +42,7 @@ class Webcrawler:
             self.full_data = self.assemble_full_data()
 
             # Montagem do arquivo data.csv
-            self.assemble_csv_file("./data1")
+            self.assemble_csv_file("./data/data1")
         finally:
 
             # Fechamento do navegador
@@ -68,6 +75,8 @@ class Webcrawler:
 
     # Método que transforma cada tabela em uma lista de todos os reatores.
     def format_table_list(self, rows) -> list:
+        start = time.time() 
+        
         tlist = list()
         for row in rows:
             data = list()
@@ -90,6 +99,10 @@ class Webcrawler:
                 unit[5] = 0
             else:
                 unit[5] = float(unit[5])
+                
+            end = time.time()
+            print(f"Time: {end-start}")    
+            
         return tlist
 
     # Método que constroi a lista com todos os reatores separados
