@@ -108,6 +108,8 @@ class Analysis:
         for table in intersection:
             if len(table) > 0:
                 df = pd.DataFrame(table)
+                df.drop(columns=['source', 'iaeaid', 'last_updated'], inplace=True)
+                
                 tables.append(df.to_html(
                     classes='my-12 mx-auto w-1/2 text-sm', 
                     border=1, 
