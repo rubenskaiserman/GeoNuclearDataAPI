@@ -4,6 +4,15 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import csv
 
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+
+# browser = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=chrome_options)
+
 import time
 
 
@@ -18,7 +27,7 @@ class Webcrawler:
         # Instanciação do objeto Webdriver que coleta os dados
         options = ChromeOptions()
         options.headless = True
-        self.webdriver = Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.webdriver = Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
         self.tables = list()
         try:
