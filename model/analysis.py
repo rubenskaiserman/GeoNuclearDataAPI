@@ -11,6 +11,7 @@ import base64
 class Analysis:
     def __init__(self):
         self.db = database.Client()
+        self.db.start()
         
             
     def _query_all(self, key:str, items:list):
@@ -57,7 +58,6 @@ class Analysis:
             data['reactor_model'] = self._query_all('reactor_model' , reactor_model)
             data['parameters']['reactor_model'] = reactor_model
             
-        print(capacity)
         if capacity > 0:
             data['capacity'] = self._query_all('capacity' , capacity)
             data['parameters']['capacity'] = capacity
@@ -128,6 +128,7 @@ class Analysis:
     # Multiplos nomes => Quais foram os tipos de reatores selecionadas
     def graphs(self, by:str, data:dict):
         images = []
+        
         if by == 'name':
             results = data['name']
             df = pd.DataFrame(results)
