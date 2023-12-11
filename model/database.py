@@ -1,8 +1,6 @@
 import pandas as pd
 from abc import ABC, abstractmethod
-
-import wikicrawler
-
+from model import wikicrawler
 import io
 import csv
 
@@ -26,6 +24,7 @@ class Database(ABC):
 class Client(Database):
     def __init__(self):
         self.wikicrawler = wikicrawler.Webcrawler()
+        self.wikicrawler.generate_csv_data()
         csv_data = self.wikicrawler.csv_string
         csv_buffer = io.StringIO(csv_data)
         
@@ -122,6 +121,7 @@ class Client(Database):
 
     def update(self):
         self.wikicrawler = wikicrawler.Webcrawler()
+        wikicrawler.generate_csv_data()
         csv_data = self.wikicrawler.csv_string
         csv_buffer = io.StringIO(csv_data)
         

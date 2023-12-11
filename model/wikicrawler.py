@@ -8,7 +8,7 @@ import io
 
 # Classe que atualiza o arquivo data.csv quando instanciada.
 class Webcrawler:
-    def __init__(self):
+    def generate_csv_data(self):
         steps = 1
 
         self.__default_xpath = "/html/body/div[2]/div/div[3]/main/div[3]/div[3]/div[1]/table[%%]"
