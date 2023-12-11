@@ -111,7 +111,8 @@ class Analysis:
                 df.drop(columns=['source', 'iaeaid', 'last_updated'], inplace=True)
                 
                 tables.append(df.to_html(
-                    classes='my-12 mx-auto w-1/2 text-sm', 
+                    classes='my-12 mx-auto w-1/2 text-sm',
+                    col_space=100,
                     border=1, 
                     index=False, 
                     justify='center'
