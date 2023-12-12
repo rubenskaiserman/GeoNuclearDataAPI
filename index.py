@@ -31,6 +31,9 @@ def select_where(key, value):
     key = key.lower()
     value = value.lower()
     
+    if db.data == []:
+        db.start()
+    
     if key not in db.keys:
         return Response(
             content_type='text/json', 
@@ -54,6 +57,9 @@ def select_where(key, value):
 def select_unique(key):
     key = key.lower()
     
+    if db.data == []:
+        db.start()
+    
     if key not in db.keys:
         return Response(
             content_type='text/json', 
@@ -75,6 +81,10 @@ def select_unique(key):
 
 @app.route('/data/count/<key>/all', methods=['GET'])
 def group_by_key(key):
+    if db.data == []:
+        db.start()
+    
+    
     if key not in db.keys:
         return Response(
             content_type='text/json', 
@@ -100,6 +110,8 @@ def group_by_key(key):
 
 @app.route('/data/keys', methods=['GET'])
 def keys():
+    if db.data == []:
+        db.start()
     keys = db.keys.copy()
     keys.remove('id')
     keys.remove('source')
@@ -128,7 +140,8 @@ def analysis():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    db.start()
+    if db.data == []:
+        db.start()
     keys = db.keys.copy()
     keys.remove('id')
     keys.remove('source')

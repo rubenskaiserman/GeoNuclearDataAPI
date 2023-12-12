@@ -110,16 +110,15 @@
       {% endfor %}
     </div>
     <div class="mt-10 text-center">
-      <label for="capacity" id="capacity-label"> Capacity: Not Selected (MW) </label>
+      <label for="capacity" id="capacity-label" class="hidden"> Capacity: Not Selected (MW) </label>
       <br />
       <input
-        class="w-96"
+        class="w-96 hidden"
         type="range"
         min="0"
         max="1600"
         step="100"
         value="0"
-        class="slider"
         id="capacity"
         onchange="addRange()"
       />
@@ -131,6 +130,6 @@
         Generate Analysis
       </button>
     </div>
-    <div id="analysis" class=" mb-12 text-center"></div>
+    <div id="analysis" class="mb-12 text-center"></div>
   </body>
 </html>
